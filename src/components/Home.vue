@@ -1,16 +1,17 @@
 <template>
   <v-container>
-    <v-row></v-row>
-    <router-view></router-view>
   </v-container>
 </template>
 
 <script>
 export default {
-  name: "Home"
+  name: "Home",
+  data() {
+    return {}
+  }
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 
 </style>
