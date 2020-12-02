@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    drawerState:false
+    drawerState: null
   },
   mutations: {
     change(state, payload) {

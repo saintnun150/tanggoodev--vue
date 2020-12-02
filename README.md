@@ -22,3 +22,7 @@ yarn lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### 기타
+firebase 글로벌 설치
+npm install -g firebase-tools

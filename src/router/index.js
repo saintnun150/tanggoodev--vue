@@ -3,15 +3,34 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
+import Home from "@/views/Home";
+import BoardHome from "@/views/board/BoardHome";
+import BoardWrite from "@/views/board/BoardWrite";
+
 const routes = [
   {
-    path: "/about",
-    name: "About",
+    path: "/",
+    name: "Home",
+    components: {
+      default: Home
+    }
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
+  },
+  {
+    path: "/board",
+    name: "BoardHome",
+    components: {
+      default: BoardHome
+    }
+  },
+  {
+    path: "/board/write",
+    name: "BoardWrite",
+    components: {
+      default: BoardWrite
+    }
   }
 ];
 
