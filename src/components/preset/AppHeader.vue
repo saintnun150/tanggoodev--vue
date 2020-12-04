@@ -15,27 +15,21 @@
         <v-icon>mdi-login-variant</v-icon>
       </v-btn>
     </v-app-bar>
-
-    <AppLeftDrawer></AppLeftDrawer>
+    <v-navigation-drawer app v-model="drawer" width="400">
+      <AppLeftDrawer></AppLeftDrawer>
+    </v-navigation-drawer>
   </div>
 </template>
 
 <script>
-import AppLeftDrawer from "@/components/preset/AppLeftDrawer";
+import AppLeftDrawer from "@/components/preset/drawer/AppDrawer";
 
 export default {
   name: "AppHeader",
   components: {AppLeftDrawer},
-  computed: {
-    drawer: {
-      get() {
-        console.log('getter', this.$store.state.drawerState);
-        return this.$store.state.drawerState;
-      },
-      set(value) {
-        console.log('drawerL setter:', value);
-        this.$store.commit('change', value);
-      }
+  data() {
+    return {
+      drawer: false
     }
   }
 }

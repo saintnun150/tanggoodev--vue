@@ -12,7 +12,7 @@
         </v-text-field>
       </v-col>
       <v-col>
-        <WebEditor ref="test23"></WebEditor>
+        <web-editor ref="test23"></web-editor>
       </v-col>
       <v-col>
         <v-card-actions>
