@@ -29,6 +29,8 @@ export default {
     this.subscribe();
   },
   methods: {
+    // 리스너는 try catch로 감싸도 소용없다.
+    // 리스너 뒤에 콜백함수를 통해 에러를 캐치함
     subscribe() {
       console.log("구독 실행");
       this.$firebase.database().ref().child("site").child("footer").child("title").on("value", (snapshot) => {
@@ -38,7 +40,9 @@ export default {
           return;
         }
         this.footerText = v;
-      })
+      }, (e) => {
+        console.log(e.message);
+      });
     }
   }
 

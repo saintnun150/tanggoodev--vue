@@ -19,16 +19,6 @@ export default {
       site: {
         top: {
           title: "탱구데브",
-          topButtons: [
-            {
-              to: "https://github.com/saintnun150/tanggoodev--vue",
-              icon: "mdi-github"
-            },
-            {
-              to: "https://www.youtube.com/channel/UC8b_aKaepF-72QcfScaMnHA",
-              icon: "mdi-youtube"
-            }
-          ]
         },
         menu: [
           {
@@ -37,7 +27,6 @@ export default {
           },
           {
             title: "개발",
-            active: true,
             icon: "mdi-tools",
             subItems: [
               {
@@ -64,6 +53,7 @@ export default {
     subscribe() {
       this.$firebase.database().ref().child("site").on("value", (snapshot) => {
         const v = snapshot.val();
+        console.log('v:', v);
         if (!v) {
           this.$firebase.database().ref().child("site").set(this.site);
           return;

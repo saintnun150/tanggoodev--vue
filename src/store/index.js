@@ -5,11 +5,16 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    drawerState: null
+    drawerState: null,
+    editable: null
   },
   mutations: {
-    change(state, payload) {
+    changeDrawerState(state, payload) {
       state.drawerState = payload;
+    },
+    changeEditable(state, payload) {
+      console.log('payload', payload);
+      state.editable = payload;
     }
   },
   actions: {},
