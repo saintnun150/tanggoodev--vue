@@ -10,10 +10,7 @@
           width="150"
       />
       <v-spacer></v-spacer>
-      <v-btn text>
-        <span class="mr-2">Sign-in</span>
-        <v-icon>mdi-login-variant</v-icon>
-      </v-btn>
+      <sign></sign>
     </v-app-bar>
     <v-navigation-drawer app v-model="drawer" width="400">
       <AppLeftDrawer></AppLeftDrawer>
@@ -23,10 +20,11 @@
 
 <script>
 import AppLeftDrawer from "@/components/preset/drawer/AppDrawer";
+import Sign from "@/components/preset/Sign";
 
 export default {
   name: "AppHeader",
-  components: {AppLeftDrawer},
+  components: {Sign, AppLeftDrawer},
   data() {
     return {
       drawer: false
