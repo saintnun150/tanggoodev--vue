@@ -22,6 +22,9 @@
             <v-btn icon @click="moveItem(items, i, 1)" v-if="i < items.length - 1">
               <v-icon>mdi-chevron-double-down</v-icon>
             </v-btn>
+            <v-btn icon @click="removeItem(items, i)">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
           </v-list-item-icon>
         </template>
 
@@ -125,7 +128,7 @@
                 <v-btn icon @click="openDialogSubItem(k)">
                   <v-icon>mdi-pencil-outline</v-icon>
                 </v-btn>
-                <v-btn icon @click="deleteSubItem(k)">
+                <v-btn icon @click="removeItem(dialogInSubItems, k)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </td>
@@ -280,7 +283,7 @@ export default {
         if (payload < 0) {
           this.dialogInSubItems = this.items[this.selectedItemIndex].subItems;
           this.dialogSubItem = false;
-        } else {
+        } else if (payload == 1) {
           this.dialogItem = false;
         }
       }
@@ -327,6 +330,10 @@ export default {
       const item = items.splice(index, 1)[0];
       items.splice(index + direction, 0, item);
       console.log(items, index, direction);
+    },
+    removeItem(items, index) {
+      items.splice(index, 1);
+      this.save(-1);
     }
   }
 };

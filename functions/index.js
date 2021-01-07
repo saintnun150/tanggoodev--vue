@@ -14,7 +14,7 @@ var serviceAccount = require("./key.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://tanggoodev.firebaseio.com"
+  databaseURL: functions.config().admin.db_url //"https://tanggoodev.firebaseio.com"
 });
 
 const db = admin.database();
@@ -25,7 +25,8 @@ exports.createUser = functions.region('asia-northeast3').auth.user().onCreate(as
     email,
     displayName,
     photoURL,
-    createAt: new Date()
+    createAt: new Date().getMilliseconds(), //front에서 변환 필요
+    level: email === functions.config().admin.email ? 0 : 5
   };
   await db
     .ref("users")
