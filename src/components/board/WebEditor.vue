@@ -1,13 +1,13 @@
 <template>
-  <div ref="toastuiEditor"></div>
+  <div ref="toastEditor"></div>
 </template>
 
 <script>
-import Editor from '@toast-ui/editor';
-import {optionsMixin} from '@/plugins/editorOption'
-import 'codemirror/lib/codemirror.css';
-import '@toast-ui/editor/dist/toastui-editor.css';
-import '@toast-ui/editor/dist/i18n/ko-kr';
+import Editor from "@toast-ui/editor";
+import { optionsMixin } from "@/plugins/editorOption";
+import "codemirror/lib/codemirror.css";
+import "@toast-ui/editor/dist/toastui-editor.css";
+import "@toast-ui/editor/dist/i18n/ko-kr";
 
 export default {
   name: "WebEditor",
@@ -32,7 +32,7 @@ export default {
       type: Object
     }
   },
- /* watch: {
+  /* watch: {
     previewStyle(newValue) {
       this.editor.changePreviewStyle(newValue);
     },
@@ -41,7 +41,7 @@ export default {
     }
   },*/
   mounted() {
-    const options = { ...this.computedOptions, el: this.$refs.toastuiEditor };
+    const options = { ...this.computedOptions, el: this.$refs.toastEditor };
     this.editor = new Editor(options);
   },
   methods: {
@@ -50,9 +50,7 @@ export default {
       return this.$refs.toastuiEditor;
     },*/
   }
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
