@@ -5,6 +5,8 @@
         :headers="headers"
         :items="items"
         :items-per-page="5"
+        :options.sync="options"
+        :server-items-length="serverItemsLength"
     >
       <template v-slot:item.id="{ item }">
         <v-btn icon @click="openDialog(item)"><v-icon>mdi-pencil</v-icon></v-btn>
@@ -50,21 +52,47 @@ export default {
       },
       dialog: false,
       selectedItem: null,
-      unsubscribe: null
+      unsubscribe: null,
+      unsubscribeCount: null,
+      serverItemsLength: 0,
+      options: {}
+    }
+  },
+  watch: {
+    options: {
+      handler (newVal, oldVal) {
+        // 처음에 oldval이 비어있는데 리스트가 렌더링되면서 newVal이 채워짐
+        console.log(newVal);
+        console.log(oldVal);
+        this.subscribe();
+      },
+      deep: true // options 하위 object를 다 감지하고 싶음
     }
   },
   created() {
-    this.subscribe();
+    // this.subscribe();
   },
   destroyed() {
     // 해지하지 않으면 다른 페이지에서 수정이 발생해도 계속 listen 하고 있음
     if (this.unsubscribe) {
       this.unsubscribe();
     }
+    if (this.unsubscribeCount) {
+      this.unsubscribeCount();
+    }
   },
   methods: {
     subscribe() {
-      this.unsubscribe = this.$firebase.firestore().collection('boards').onSnapshot((snapshot) => {
+      this.unsubscribeCount = this.$firebase.firestore().collection('meta').doc('boards').onSnapshot((doc) => {
+        if (!doc.exists) {
+          return;
+        }
+        // 보안때문에 항상 doc.data() 이런식으로 꺼냄
+        this.serverItemsLength = doc.data().count;
+
+      });
+
+      this.unsubscribe = this.$firebase.firestore().collection('boards').limit(this.options.itemsPerPage).onSnapshot((snapshot) => {
         if (snapshot.empty) {
           this.items = [];
           return;
