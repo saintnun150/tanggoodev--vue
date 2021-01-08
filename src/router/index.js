@@ -4,8 +4,9 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
 import Home from "@/views/Home";
-import BoardHome from "@/views/board/BoardHome";
+// import BoardHome from "@/views/board/BoardHome";
 import BoardWrite from "@/views/board/BoardWrite";
+import BoardView from "@/views/board/BoardView";
 
 const routes = [
   {
@@ -21,15 +22,23 @@ const routes = [
   {
     path: "/board",
     name: "BoardHome",
-    components: {
-      default: BoardHome
-    }
+    component: () => import("../views/board/BoardHome.vue")
+    // components: {
+    //   default: BoardHome
+    // }
   },
   {
     path: "/board/write",
     name: "BoardWrite",
     components: {
       default: BoardWrite
+    }
+  },
+  {
+    path: "/board/read",
+    name: "BoardView",
+    components: {
+      default: BoardView
     }
   }
 ];
