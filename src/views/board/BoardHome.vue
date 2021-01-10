@@ -12,6 +12,9 @@
         <v-btn icon @click="openDialog(item)"><v-icon>mdi-pencil</v-icon></v-btn>
         <v-btn icon @click="remove(item)"><v-icon>mdi-delete</v-icon></v-btn>
       </template>
+      <template v-slot:item.createdAt="{ item }">
+        {{item.createdAt.toLocaleDateString()}}
+      </template>
     </v-data-table>
     <v-card-actions>
       <v-btn @click="openDialog(null)">
@@ -38,12 +41,16 @@
 </template>
 
 <script>
+import { head, last } from 'lodash'
+
 export default {
   data() {
     return {
       headers: [
         {value: 'title', text: '제목'},
-        {value: 'id', text: 'id'}
+        {value: 'createdAt', text: '작성일'},
+        {value: 'id', text: 'id'},
+
       ],
       items: [],
       form: {
@@ -55,7 +62,8 @@ export default {
       unsubscribe: null,
       unsubscribeCount: null,
       serverItemsLength: 0,
-      options: {}
+      options: {},
+      docs: []
     }
   },
   watch: {
@@ -97,12 +105,16 @@ export default {
           this.items = [];
           return;
         }
+        this.docs = snapshot.docs;
+        console.log(head(snapshot.docs).data());
+        console.log(last(snapshot.docs).data());
         this.items = snapshot.docs.map(v => {
           const item = v.data();
           return {
             id: v.id,
             title: item.title,
-            content: item.content
+            content: item.content,
+            createdAt: item.createdAt.toDate()
           };
         });
       })
@@ -119,7 +131,10 @@ export default {
       }
     },
     add() {
-      this.$firebase.firestore().collection('boards').add(this.form);
+      const item = {};
+      Object.assign(item, this.form);
+      item.createdAt = new Date();
+      this.$firebase.firestore().collection('boards').add(item);
       this.dialog = false;
     },
     update() {
