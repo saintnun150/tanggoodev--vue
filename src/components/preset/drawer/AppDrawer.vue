@@ -53,7 +53,6 @@ export default {
     subscribe() {
       this.$firebase.database().ref().child("site").on("value", (snapshot) => {
         const v = snapshot.val();
-        console.log('v:', v);
         if (!v) {
           this.$firebase.database().ref().child("site").set(this.site);
           return;
