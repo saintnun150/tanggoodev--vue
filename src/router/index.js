@@ -40,6 +40,10 @@ const routes = [
     components: {
       default: BoardView
     }
+  },
+  {
+    path: "/storage",
+    component: () => import("../views/Storage.vue")
   }
 ];
 
