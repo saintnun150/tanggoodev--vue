@@ -26,7 +26,7 @@ export default {
             icon: "mdi-human-greeting"
           },
           {
-            title: "개발",
+            title: "게시판",
             icon: "mdi-tools",
             subItems: [
               {

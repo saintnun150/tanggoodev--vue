@@ -4,9 +4,6 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
 import Home from "@/views/Home";
-// import BoardHome from "@/views/board/BoardHome";
-import BoardWrite from "@/views/board/BoardWrite";
-import BoardView from "@/views/board/BoardView";
 
 const routes = [
   {
@@ -20,31 +17,30 @@ const routes = [
     // which is lazy-loaded when the route is visited.
   },
   {
-    path: "/board",
-    name: "BoardHome",
-    component: () => import("../views/board/BoardHome.vue")
-    // components: {
-    //   default: BoardHome
-    // }
-  },
-  {
-    path: "/board/write",
-    name: "BoardWrite",
-    components: {
-      default: BoardWrite
-    }
-  },
-  {
-    path: "/board/read",
-    name: "BoardView",
-    components: {
-      default: BoardView
-    }
+    path: "/editor",
+    name: "editor",
+    component: () => import("../views/Editor")
   },
   {
     path: "/storage",
+    name: "storage",
     component: () => import("../views/Storage.vue")
-  }
+  },
+  {
+    path: "/:collection/:document",
+    name: "collection-document",
+    component: () => import("../views/Renderer")
+  },
+  {
+    path: "/:collection/:document/:action",
+    name: "collection-document-action",
+    component: () => import("../views/Renderer")
+  },
+  {
+    path: "*",
+    name: "Error",
+    component: () => import("../views/Error")
+  },
 ];
 
 const router = new VueRouter({
