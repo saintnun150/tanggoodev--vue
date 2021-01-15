@@ -62,7 +62,7 @@ export default {
       await this.$router.push(this.$route.path + '/board-write')
     },
     async articleWrite() {
-      await this.$router.push({path: this.$route.path + '/article-write', query: {articleId: 'new'}})
+      await this.$router.push({path: this.$route.path + '/article-write', query: {articleId: ''}})
     }
 
   }
