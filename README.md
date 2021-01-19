@@ -14,16 +14,21 @@ exports.함수명 = functions.옵션값.onDelete();
 
 ### setting
 ```bash
-$ firebase functions:config:set admin.email=your email admin.db_url=your firebaseURL
+firebase functions:config:set admin.email=your email admin.db_url=your firebaseURL
 
-$ firebase deploy --only functions or functions:배포할 함수명
+firebase deploy --only functions or functions:배포할 함수명
 
 ```
 
 ### check config
 
 ```bash
-$ firebase functions:config:get 
+firebase functions:config:get 
+```
+
+### moment 등록
+```bash
+yarn add moment
 ```
 
 

@@ -13,15 +13,19 @@
         must-sort
         item-key="id"
     >
-
+      <template v-slot:item.createdAt="{item}">
+        <display-time :time="item.createdAt"></display-time>
+      </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script>
 import {head, last} from 'lodash'
+import DisplayTime from "@/components/DisplayTime";
 
 export default {
+  components: {DisplayTime},
   props: ['info', 'document'],
   data() {
     return {
@@ -101,8 +105,8 @@ export default {
         this.items = sn.docs.map(doc => {
           const item = doc.data()
           item.id = doc.id
-          item.createdAt = item.createdAt.toDate().toLocaleString()
-          item.updatedAt = item.updatedAt.toDate().toLocaleString()
+          item.createdAt = item.createdAt.toDate()
+          item.updatedAt = item.updatedAt.toDate()
           return item
         });
       });
