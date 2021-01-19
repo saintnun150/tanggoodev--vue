@@ -8,7 +8,7 @@
           <v-btn icon @click="$router.push('/board/' + document)">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-btn icon @click="save">
+          <v-btn icon @click="save" :disabled="!user">
             <v-icon>mdi-content-save</v-icon>
           </v-btn>
         </v-toolbar>
@@ -43,6 +43,9 @@ export default {
   computed: {
     articleId() {
       return this.$route.params.articleId
+    },
+    user() {
+      return this.$store.state.user
     }
   },
   created() {
@@ -86,6 +89,13 @@ export default {
         if (!this.articleId) {
           doc.createdAt = createdAt
           doc.commentCnt = 0
+          doc.readCount = 0
+          doc.uid = this.$store.state.fireUser.uid
+          doc.user = {
+            email: this.user.email,
+            photoURL: this.user.photoURL,
+            displayName: this.user.displayName
+          }
           batch.set(this.ref.collection('articles').doc(id), doc)
           batch.update(this.ref, {count: this.$firebase.firestore.FieldValue.increment(1)})
         } else {

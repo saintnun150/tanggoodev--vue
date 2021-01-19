@@ -73,7 +73,7 @@ export default {
       }
     },
     signOut() {
-      console.log("here");
+      console.log("SignOut complete");
       this.$firebase.auth().signOut();
     }
   }

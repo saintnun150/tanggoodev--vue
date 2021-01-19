@@ -7,7 +7,8 @@ export default new Vuex.Store({
   state: {
     drawerState: null,
     editable: null,
-    fireUser: null
+    fireUser: null,
+    user: null
   },
   mutations: {
     changeDrawerState(state, payload) {
@@ -19,6 +20,9 @@ export default new Vuex.Store({
     },
     setFireUser(state, fu) {
       state.fireUser = fu;
+    },
+    setUser(state, user) {
+      state.user = user;
     }
   },
   actions: {},

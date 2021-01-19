@@ -13,34 +13,38 @@ var admin = require("firebase-admin");
 var serviceAccount = require("./key.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: functions.config().admin.db_url //"https://tanggoodev.firebaseio.com"
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: functions.config().admin.db_url //"https://tanggoodev.firebaseio.com"
 });
 
 const db = admin.database();
 const fdb = admin.firestore();
 
 exports.createUser = functions.region('asia-northeast3').auth.user().onCreate(async user => {
-  const { uid, email, displayName, photoURL } = user;
-  const u = {
-    email,
-    displayName,
-    photoURL,
-    createAt: new Date().getMilliseconds(), //front에서 변환 필요
-    level: email === functions.config().admin.email ? 0 : 5
-  };
-  await db
-    .ref("users")
-    .child(uid)
-    .set(u);
+    const {uid, email, displayName, photoURL} = user;
+    const time = new Date()
+    const u = {
+        email,
+        displayName,
+        photoURL,
+        createAt: time, //front에서 변환 필요
+        level: email === functions.config().admin.email ? 0 : 5
+    };
+    await fdb.collection("users").doc(uid).set(u)
+    u.createAt = time.getTime()
+    await db
+        .ref("users")
+        .child(uid)
+        .set(u);
 });
 
 exports.deleteUser = functions.region('asia-northeast3').auth.user().onDelete(async user => {
-  const { uid } = user;
-  await db
-    .ref("users")
-    .child(uid)
-    .remove();
+    const {uid} = user;
+    await db
+        .ref("users")
+        .child(uid)
+        .remove();
+    await fdb.collection("users").doc(uid).delete()
 });
 
 exports.incrementBoardCount = functions
@@ -48,11 +52,11 @@ exports.incrementBoardCount = functions
     .firestore
     .document('boards/{boardId}')
     .onCreate(async (snap, context) => {
-      try {
-        await fdb.collection('meta').doc('boards').update('count', admin.firestore.FieldValue.increment(1));
-      } catch (e) {
-        await fdb.collection('meta').doc('boards').set({count: 1});
-      }
+        try {
+            await fdb.collection('meta').doc('boards').update('count', admin.firestore.FieldValue.increment(1));
+        } catch (e) {
+            await fdb.collection('meta').doc('boards').set({count: 1});
+        }
     });
 
 exports.decrementBoardCount = functions
@@ -60,5 +64,5 @@ exports.decrementBoardCount = functions
     .firestore
     .document('boards/{boardId}')
     .onDelete(async (snap, context) => {
-      await fdb.collection('meta').doc('boards').update('count', admin.firestore.FieldValue.increment(-1));
+        await fdb.collection('meta').doc('boards').update('count', admin.firestore.FieldValue.increment(-1));
     });
