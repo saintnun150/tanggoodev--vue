@@ -10,6 +10,10 @@ import "./plugins/moment"
 
 Vue.config.productionTip = false;
 
+//sameSite Lax 이슈
+/*document.cookie = 'same-site-cookie=foo; SameSite=Lax';
+document.cookie = 'cross-site-cookie=bar; SameSite=None; Secure';*/
+
 new Vue({
   router,
   store,

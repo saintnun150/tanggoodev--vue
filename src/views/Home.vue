@@ -7,10 +7,7 @@
 
 <script>
 export default {
-  name: "Home",
-  methods: {
-  }
-
+  name: "Home"
 }
 </script>
 

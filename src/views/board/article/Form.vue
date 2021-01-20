@@ -14,13 +14,23 @@
         </v-toolbar>
         <v-card-text>
           <v-text-field v-model="form.title" outlined label="제목"></v-text-field>
-          <editor :initialValue="form.content" ref="editor"></editor>
+          <editor v-if="!articleId" :initialValue="form.content" initialEditType="wysiwyg" :options="{hideModeSwitch: true}" ref="editor"></editor>
+          <template v-else>
+            <editor v-if="form.content" :initialValue="form.content" initialEditType="wysiwyg" :options="{hideModeSwitch: true}" ref="editor"></editor>
+            <v-container v-else>
+              <v-row justify="center" align="center">
+                <v-progress-circular indeterminate></v-progress-circular>
+              </v-row>
+            </v-container>
+          </template>
         </v-card-text>
       </v-card>
     </v-form>
   </v-container>
 </template>
 <script>
+import axios from "axios";
+
 export default {
   props: ['document', 'action'],
   data() {
@@ -37,37 +47,39 @@ export default {
   },
   watch: {
     document() {
-      this.subscribe()
+      this.fetch()
     }
   },
   computed: {
     articleId() {
-      return this.$route.params.articleId
+      return this.$route.query.articleId
     },
     user() {
       return this.$store.state.user
     }
   },
   created() {
-    this.subscribe()
+    this.fetch()
   },
   destroyed() {
-    if (this.unsubscribe) this.unsubscribe()
   },
   methods: {
-    subscribe() {
+    async fetch() {
       this.ref = this.$firebase.firestore().collection('boards').doc(this.document)
       if (!this.articleId) {
         return;
       }
-      if (this.unsubscribe) this.unsubscribe()
-      this.unsubscribe = this.ref.collection('articles').doc(this.articleId).onSnapshot(doc => {
-        this.exists = doc.exists
-        if (this.exists) {
-          const item = doc.data()
-          this.form.title = item.title
-        }
-      })
+      const doc = await this.ref.collection('articles').doc(this.articleId).get()
+      this.exists = doc.exists
+      if (!this.exists) {
+        return;
+      }
+      const item = doc.data()
+      this.form.title = item.title
+      //const res = await axios.get(item.url)
+      // 어차피 data만 필요하기 때문에 res.data 이렇게 써야하지만 아래와 같이 사용가능
+      const { data } = await axios.get(item.url)
+      this.form.content = data
     },
     async save() {
       this.loading = true
@@ -75,6 +87,7 @@ export default {
         const createdAt = new Date()
         const id = createdAt.getTime().toString()
         const md = this.$refs.editor.invoke('getMarkdown')
+        console.log(md);
         const sn = await this.$firebase.storage().ref().child('boards').child(this.document).child(id + '.md').putString(md)
         const url = await sn.ref.getDownloadURL()
         const doc = {
@@ -104,8 +117,7 @@ export default {
         await batch.commit();
       } finally {
         this.loading = false
-        this.$router.push('/board/' + this.document)
-
+        await this.$router.push('/board/' + this.document)
       }
 
     }
