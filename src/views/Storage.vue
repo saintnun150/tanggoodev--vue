@@ -22,11 +22,9 @@ export default {
       const sn = await this.$firebase.storage().ref().child('xxx.text').putString('abcd');
       let url = await sn.ref.getDownloadURL();
       this.url = url
-      console.log(url);
     },
     async read() {
       const res = await axios.get(this.url);
-      console.log(res);
       this.text = res.data;
     }
   }

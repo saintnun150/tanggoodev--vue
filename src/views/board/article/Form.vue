@@ -87,7 +87,6 @@ export default {
         const createdAt = new Date()
         const id = createdAt.getTime().toString()
         const md = this.$refs.editor.invoke('getMarkdown')
-        console.log(md);
         const sn = await this.$firebase.storage().ref().child('boards').child(this.document).child(id + '.md').putString(md)
         const url = await sn.ref.getDownloadURL()
         const doc = {

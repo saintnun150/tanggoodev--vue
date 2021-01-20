@@ -329,7 +329,6 @@ export default {
     moveItem(items, index, direction) {
       const item = items.splice(index, 1)[0];
       items.splice(index + direction, 0, item);
-      console.log(items, index, direction);
     },
     removeItem(items, index) {
       items.splice(index, 1);

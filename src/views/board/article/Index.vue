@@ -130,9 +130,6 @@ export default {
     openDialog(item) {
       this.dialog = true
       this.selectedItem = item
-    },
-    close() {
-
     }
   }
 }
