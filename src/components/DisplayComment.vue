@@ -1,7 +1,16 @@
 <template>
   <v-card>
     <v-card-title>
-      <v-text-field v-model="comment" outlined label="댓글 작성" @keypress.enter="save" hide-details></v-text-field>
+      <v-textarea
+          v-model="comment"
+          @click:append="save"
+          append-icon="mdi-send"
+          label="댓글 작성"
+          rows="3"
+          auto-grow
+          outlined
+          hide-details
+      ></v-textarea>
     </v-card-title>
     <template v-for="(item, i) in items">
       <v-list-item :key="item.id">
@@ -9,8 +18,8 @@
           <display-user :user="item.user"></display-user>
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-subtitle v-text="item.comment"></v-list-item-subtitle>
-          <v-list-item-subtitle>
+          <v-list-item-subtitle class="black--text comment" v-text="item.comment"></v-list-item-subtitle>
+          <v-list-item-subtitle class="font-italic">
             <display-time :time="item.createdAt"></display-time>
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -18,19 +27,24 @@
       <v-divider :key="i"></v-divider>
     </template>
     <v-list-item>
-      <v-btn v-if="lastDoc" color="primary" text @click="more" block>더보기</v-btn>
+      <v-btn v-if="lastDoc && items.length < article.commentCount"
+             v-intersect="onIntersect"
+             color="primary" text
+             @click="more" block>더보기
+      </v-btn>
     </v-list-item>
   </v-card>
 </template>
 
 <script>
-import { last } from 'lodash'
+import {last} from 'lodash'
 import DisplayTime from "@/components/DisplayTime";
 import DisplayUser from "@/components/DisplayUser";
+
 const LIMIT = 5
 
 export default {
-  props: ['docRef'],
+  props: ['article', 'docRef'],
   components: {
     DisplayTime, DisplayUser
   },
@@ -56,7 +70,6 @@ export default {
   methods: {
     snapShotToItems(sn) {
       this.lastDoc = last(sn.docs)
-      console.log('this.lastDoc', this.lastDoc);
       sn.docs.forEach(doc => {
         const exists = this.items.some(item => doc.id === item.id)
         if (!exists) {
@@ -90,6 +103,9 @@ export default {
       const sn = await this.docRef.collection('comments').orderBy('createdAt', 'desc').startAfter(this.lastDoc).limit(LIMIT).get()
       this.snapShotToItems(sn)
     },
+    onIntersect(entries, observer, isIntersecting) {
+      if (isIntersecting) this.more()
+    },
     async save() {
       const doc = {
         createdAt: new Date(),
@@ -112,3 +128,8 @@ export default {
   }
 }
 </script>
+<style scoped lang="scss">
+.comment {
+  white-space: pre-wrap;
+}
+</style>
