@@ -24,8 +24,10 @@
 </template>
 
 <script>
+import { last } from 'lodash'
 import DisplayTime from "@/components/DisplayTime";
 import DisplayUser from "@/components/DisplayUser";
+const LIMIT = 5
 
 export default {
   props: ['docRef'],
@@ -37,7 +39,7 @@ export default {
       comment: '',
       items: [],
       unsubscribe: null,
-      limit: 5
+      lastDoc: null
     }
   },
   computed: {
@@ -55,19 +57,49 @@ export default {
     subscribe() {
       if (this.unsubscribe) this.unsubscribe()
       // collection 감시: snapShot, document 감시: document
-      this.unsubscribe = this.docRef.collection('comments').limit(this.limit).onSnapshot(sn => {
+      this.unsubscribe = this.docRef.collection('comments').orderBy('createdAt', 'desc').limit(LIMIT).onSnapshot(sn => {
         if (sn.empty) {
           this.items = []
           return
         }
-        this.items = sn.docs.map(doc => {
+        this.lastDoc = last(sn.docs)
+        sn.docs.forEach(doc => {
+          const exists = this.items.some(item => doc.id === item.id)
+          if (!exists) {
+            const item = doc.data()
+            item.id = doc.id
+            item.createdAt = item.createdAt.toDate()
+            item.updatedAt = item.updatedAt.toDate()
+            this.items.push(item)
+          }
+        })
+        this.items.sort((prev, next) => {
+          // 새로 추가하면 sort가 되지 않기 때문에 추가
+          const prevId = Number(prev.id)
+          const nextId = Number(next.id)
+          return nextId - prevId
+        });
+      })
+    },
+    async more() {
+      const sn = await this.docRef.collection('comments').orderBy('createdAt', 'desc').startAfter(this.lastDoc).limit(LIMIT).get()
+      this.lastDoc = last(sn.docs)
+      sn.docs.forEach(doc => {
+        const exists = this.items.some(item => doc.id === item.id)
+        if (!exists) {
           const item = doc.data()
           item.id = doc.id
           item.createdAt = item.createdAt.toDate()
           item.updatedAt = item.updatedAt.toDate()
-          return item
-        })
+          this.items.push(item)
+        }
       })
+      this.items.sort((prev, next) => {
+        // 새로 추가하면 sort가 되지 않기 때문에 추가
+        const prevId = Number(prev.id)
+        const nextId = Number(next.id)
+        return nextId - prevId
+      });
     },
     async save() {
       const doc = {
@@ -88,10 +120,6 @@ export default {
       await batch.commit()
       this.comment = ''
     },
-    more() {
-      this.limit += 5
-      this.subscribe()
-    }
   }
 }
 </script>
