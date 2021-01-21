@@ -18,7 +18,7 @@
       <v-divider :key="i"></v-divider>
     </template>
     <v-list-item>
-      <v-btn color="primary" text @click="more" block>더보기</v-btn>
+      <v-btn v-if="lastDoc" color="primary" text @click="more" block>더보기</v-btn>
     </v-list-item>
   </v-card>
 </template>
@@ -54,36 +54,9 @@ export default {
     if (this.unsubscribe) this.unsubscribe()
   },
   methods: {
-    subscribe() {
-      if (this.unsubscribe) this.unsubscribe()
-      // collection 감시: snapShot, document 감시: document
-      this.unsubscribe = this.docRef.collection('comments').orderBy('createdAt', 'desc').limit(LIMIT).onSnapshot(sn => {
-        if (sn.empty) {
-          this.items = []
-          return
-        }
-        this.lastDoc = last(sn.docs)
-        sn.docs.forEach(doc => {
-          const exists = this.items.some(item => doc.id === item.id)
-          if (!exists) {
-            const item = doc.data()
-            item.id = doc.id
-            item.createdAt = item.createdAt.toDate()
-            item.updatedAt = item.updatedAt.toDate()
-            this.items.push(item)
-          }
-        })
-        this.items.sort((prev, next) => {
-          // 새로 추가하면 sort가 되지 않기 때문에 추가
-          const prevId = Number(prev.id)
-          const nextId = Number(next.id)
-          return nextId - prevId
-        });
-      })
-    },
-    async more() {
-      const sn = await this.docRef.collection('comments').orderBy('createdAt', 'desc').startAfter(this.lastDoc).limit(LIMIT).get()
+    snapShotToItems(sn) {
       this.lastDoc = last(sn.docs)
+      console.log('this.lastDoc', this.lastDoc);
       sn.docs.forEach(doc => {
         const exists = this.items.some(item => doc.id === item.id)
         if (!exists) {
@@ -99,7 +72,23 @@ export default {
         const prevId = Number(prev.id)
         const nextId = Number(next.id)
         return nextId - prevId
-      });
+      })
+    },
+    subscribe() {
+      if (this.unsubscribe) this.unsubscribe()
+      // collection 감시: snapShot, document 감시: document
+      this.unsubscribe = this.docRef.collection('comments').orderBy('createdAt', 'desc').limit(LIMIT).onSnapshot(sn => {
+        if (sn.empty) {
+          this.items = []
+          return
+        }
+        this.snapShotToItems(sn)
+      })
+    },
+    async more() {
+      if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
+      const sn = await this.docRef.collection('comments').orderBy('createdAt', 'desc').startAfter(this.lastDoc).limit(LIMIT).get()
+      this.snapShotToItems(sn)
     },
     async save() {
       const doc = {
