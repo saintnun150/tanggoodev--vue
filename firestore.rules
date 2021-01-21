@@ -1,12 +1,30 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
 
+    function approvedLevel (level) {
+      return request.auth.uid != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level <= level;
+    }
+    // 게시판 처리
+    match /boards/{boardId} {
       allow read: if true;
-
-      allow write: if
-      request.auth.uid != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level == 0;
+      allow create: if approvedLevel(0);
+      allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || resource.data.count != request.resource.data.count;
+      match /articles/{articleId} {
+        allow read: if true;
+        allow create: if approvedLevel(5);
+        allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || resource.data.commentCount != request.resource.data.commentCount;
+        match /comments/{commentId} {
+          allow read: if true;
+          allow create: if approvedLevel(5);
+          allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid;
+        }
+      }
+    }
+    // 게시판의 서브 콜렉션(게시글 리스트 등)
+    match /users/{userId} {
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+      allow create, delete: if false; // functions
     }
   }
 }

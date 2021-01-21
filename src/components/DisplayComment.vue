@@ -119,7 +119,7 @@ export default {
         }
       }
       const id = doc.createdAt.getTime().toString()
-      const batch = this.$firebase.firestore().batch()
+      const batch = await this.$firebase.firestore().batch()
       batch.update(this.docRef, {commentCount: this.$firebase.firestore.FieldValue.increment(1)})
       batch.set(this.docRef.collection('comments').doc(id), doc)
       await batch.commit()
