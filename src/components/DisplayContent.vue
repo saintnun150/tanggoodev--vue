@@ -33,15 +33,18 @@
       수정일: <display-time :time="item.updatedAt"></display-time>
       </span>
     </v-card-actions>
+    <v-divider/>
+    <display-comment :docRef="this.ref.collection('articles').doc(this.item.id)"></display-comment>
   </v-card>
 </template>
 
 <script>
 import axios from "axios";
 import DisplayTime from "@/components/DisplayTime";
+import DisplayComment from "@/components/DisplayComment";
 
 export default {
-  components: {DisplayTime},
+  components: {DisplayTime, DisplayComment},
   props: ['document', 'item'],
   data() {
     return {
@@ -69,7 +72,7 @@ export default {
     },
     async remove() {
       // 아래 작업들은 모두 이뤄져야하기 때문에 트랜잭션 처리가 필요하다 => batch로 작업
-      const batch = await this.$firebase.firestore().batch()
+      const batch = this.$firebase.firestore().batch()
       batch.update(this.ref, {count: this.$firebase.firestore.FieldValue.increment(-1)})
       batch.delete(this.ref.collection('articles').doc(this.item.id))
       await batch.commit()

@@ -96,7 +96,7 @@ export default {
         }
         // 중간에 에러가 나서 컬렉션 개수와 실제 데이터 개수가 일치하지 않을 수 있음
         // 맞춰주기 위해 batch를 생성하여 commit 전 에러 발생 시 롤백이 될 수 있도록 트랜젝션을 걸어줌
-        const batch = await this.$firebase.firestore().batch()
+        const batch = this.$firebase.firestore().batch()
 
         if (!this.articleId) {
           doc.createdAt = createdAt
