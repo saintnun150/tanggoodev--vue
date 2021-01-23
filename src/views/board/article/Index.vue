@@ -58,6 +58,9 @@ export default {
     }
   },
   watch: {
+    document() {
+      this.subscribe(0)
+    },
     options: {
       handler(n, o) {
         //처음에 options.page는 null임 => data에서 초기값 설정 안함

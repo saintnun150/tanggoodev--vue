@@ -20,9 +20,6 @@
           <div class="text-right font-italic caption">수정일: {{ info.updatedAt.toDate().toLocaleString() }}</div>
         </v-alert>
       </v-card-text>
-      <!--      <v-card-text>
-              articles
-            </v-card-text>-->
       <article-list :document="document" :info="info"></article-list>
     </v-card>
   </v-container>

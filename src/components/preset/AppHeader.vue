@@ -11,6 +11,7 @@
       />
       <v-spacer></v-spacer>
       <sign></sign>
+      <v-btn @click="test">test</v-btn>
     </v-app-bar>
     <v-navigation-drawer app v-model="drawer" width="400">
       <AppLeftDrawer></AppLeftDrawer>
@@ -28,6 +29,12 @@ export default {
   data() {
     return {
       drawer: false
+    }
+  },
+  methods: {
+    async test() {
+      console.log('user', this.$store.state.fireUser.uid);
+      await this.$firebase.firestore().collection('users').doc(this.$store.state.fireUser.uid).update({visitedAt:new Date(), visitCount : 0})
     }
   }
 }

@@ -7,13 +7,36 @@ service cloud.firestore {
     }
     // 게시판 처리
     match /boards/{boardId} {
+      function incrementBoardCount(before, after) {
+        return before.category == after.category &&
+        before.createdAt == after.createdAt &&
+        before.updatedAt == after.updatedAt &&
+        before.title == after.title &&
+        before.description == after.description &&
+        before.uid == after.uid &&
+        before.count != after.count;
+      }
       allow read: if true;
       allow create: if approvedLevel(0);
-      allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || resource.data.count != request.resource.data.count;
+      allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementBoardCount(resource.data, request.resource.data);
+
+      // 게시판의 서브 콜렉션(게시글 리스트 등)
       match /articles/{articleId} {
+        function incrementArticleCount(before, after) {
+          return before.createdAt == after.createdAt &&
+          before.url == after.url &&
+          before.updatedAt == after.updatedAt &&
+          before.title == after.title &&
+          before.uid == after.uid &&
+          before.user.displayName == after.user.displayName &&
+          before.user.email == after.user.email &&
+          before.user.photoURL == after.user.photoURL &&
+          (before.commentCount != after.commentCount || before.readCount == after.readCount);
+        }
         allow read: if true;
         allow create: if approvedLevel(5);
-        allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || resource.data.commentCount != request.resource.data.commentCount;
+        allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementArticleCount(resource.data, request.resource.data);
+
         match /comments/{commentId} {
           allow read: if true;
           allow create: if approvedLevel(5);
@@ -21,9 +44,10 @@ service cloud.firestore {
         }
       }
     }
-    // 게시판의 서브 콜렉션(게시글 리스트 등)
+
     match /users/{userId} {
-      allow read, update: if request.auth != null && request.auth.uid == userId;
+      allow read: if (request.auth != null && request.auth.uid == userId) || approvedLevel(0);
+      allow update: if (request.auth != null && request.auth.uid == userId) && resource.data.level == request.resource.data.level || approvedLevel(0);
       allow create, delete: if false; // functions
     }
   }

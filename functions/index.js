@@ -28,7 +28,9 @@ exports.createUser = functions.region('asia-northeast3').auth.user().onCreate(as
         displayName,
         photoURL,
         createAt: time, //front에서 변환 필요
-        level: email === functions.config().admin.email ? 0 : 5
+        level: email === functions.config().admin.email ? 0 : 5,
+        visitedAt: time,
+        visitCount: 0
     };
     await fdb.collection("users").doc(uid).set(u)
     u.createAt = time.getTime()
