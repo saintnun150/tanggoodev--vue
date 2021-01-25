@@ -3,7 +3,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     function approvedLevel (level) {
-      return request.auth.uid != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level <= level;
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.level <= level;
     }
     // 게시판 처리
     match /boards/{boardId} {
@@ -18,7 +18,8 @@ service cloud.firestore {
       }
       allow read: if true;
       allow create: if approvedLevel(0);
-      allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementBoardCount(resource.data, request.resource.data);
+      allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementBoardCount(resource.data, request.resource.data);
+      allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid;
 
       // 게시판의 서브 콜렉션(게시글 리스트 등)
       match /articles/{articleId} {
@@ -31,11 +32,12 @@ service cloud.firestore {
           before.user.displayName == after.user.displayName &&
           before.user.email == after.user.email &&
           before.user.photoURL == after.user.photoURL &&
-          (before.commentCount != after.commentCount || before.readCount == after.readCount);
+          (before.commentCount != after.commentCount || before.readCount != after.readCount);
         }
         allow read: if true;
         allow create: if approvedLevel(5);
-        allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementArticleCount(resource.data, request.resource.data);
+        allow update: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementArticleCount(resource.data, request.resource.data);
+        allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid;
 
         match /comments/{commentId} {
           allow read: if true;
