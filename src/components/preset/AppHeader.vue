@@ -33,8 +33,8 @@ export default {
   },
   methods: {
     async test() {
-      console.log('user', this.$store.state.fireUser.uid);
-      await this.$firebase.firestore().collection('users').doc(this.$store.state.fireUser.uid).update({visitedAt:new Date(), visitCount : 0})
+      const sn = await this.$firebase.storage().ref().child('boards').child('tt').child('1234567890123456').putString('hi!')
+      console.log(sn)
     }
   }
 }
