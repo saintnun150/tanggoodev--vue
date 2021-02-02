@@ -4,7 +4,7 @@
         :headers="headers"
         :items="items"
         :items-per-page="5"
-        :server-items-length="info.count"
+        :server-items-length="board.count"
         :options.sync="options"
         :footer-props="{
             'items-per-page-options': [5,10,20,30,50]
@@ -16,15 +16,12 @@
         <display-time :time="item.createdAt"></display-time>
       </template>
       <template v-slot:item.title="{item}">
-        <a @click="openDialog(item)">{{item.title}}</a>
+        <a @click="read(item)">{{item.title}}</a>
       </template>
       <template v-slot:item.user.displayName="{item}">
         <display-user :user="item.user"></display-user>
       </template>
     </v-data-table>
-    <v-dialog v-model="dialog" v-if="selectedItem" fullscreen>
-      <display-content :document="document" :item="selectedItem" @close="dialog=false"></display-content>
-    </v-dialog>
   </div>
 </template>
 
@@ -32,11 +29,10 @@
 import {head, last} from 'lodash'
 import DisplayTime from "@/components/DisplayTime";
 import DisplayUser from "@/components/DisplayUser";
-import DisplayContent from "@/components/DisplayContent";
 
 export default {
-  components: {DisplayContent, DisplayTime, DisplayUser},
-  props: ['info', 'document'],
+  components: {DisplayTime, DisplayUser},
+  props: ['board', 'boardId'],
   data() {
     return {
       headers: [
@@ -52,13 +48,11 @@ export default {
         sortBy: ['createdAt'],
         sortDesc: [true]
       },
-      docs: [],
-      dialog: false,
-      selectedItem: null
+      docs: []
     }
   },
   watch: {
-    document() {
+    boardId() {
       this.subscribe(0)
     },
     options: {
@@ -79,10 +73,6 @@ export default {
       },
       deep: true
     },
-    dialog(n) {
-      if (!n) this.selectedItem = null
-      // 단순히 dialog를 false하여 창을 닫는건 의미가 없다.
-    }
   },
   created() {
   },
@@ -97,7 +87,7 @@ export default {
       const sort = this.options.sortDesc[0] ? 'desc' : 'asc'
       const limit = this.options.itemsPerPage
 
-      const ref = this.$firebase.firestore().collection('boards').doc(this.document).collection('articles').orderBy(order, sort)
+      const ref = this.$firebase.firestore().collection('boards').doc(this.boardId).collection('articles').orderBy(order, sort)
       let query
 
       switch (arrow) {
@@ -130,9 +120,8 @@ export default {
         });
       });
     },
-    openDialog(item) {
-      this.dialog = true
-      this.selectedItem = item
+    read(item) {
+      this.$router.push({path: this.$route.path + '/' + item.id})
     }
   }
 }

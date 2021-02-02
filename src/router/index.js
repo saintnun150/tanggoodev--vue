@@ -1,14 +1,14 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import Vue from 'vue';
+import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 
-import Home from "@/views/Home";
+import Home from '@/views/Home';
 
 const routes = [
   {
-    path: "/",
-    name: "Home",
+    path: '/',
+    name: 'Home',
     components: {
       default: Home
     }
@@ -17,34 +17,26 @@ const routes = [
     // which is lazy-loaded when the route is visited.
   },
   {
-    path: "/editor",
-    name: "editor",
-    component: () => import("../views/Editor")
+    path: '/board',
+    component: () => import('../views/board/Index')
   },
   {
-    path: "/storage",
-    name: "storage",
-    component: () => import("../views/Storage.vue")
+    path: '/board/:info',
+    component: () => import('../views/board/Info')
   },
   {
-    path: "/:collection/:document",
-    name: "collection-document",
-    component: () => import("../views/Renderer")
+    path: '/board/:info/:article',
+    component: () => import('../views/board/Article')
   },
   {
-    path: "/:collection/:document/:action",
-    name: "collection-document-action",
-    component: () => import("../views/Renderer")
-  },
-  {
-    path: "*",
-    name: "Error",
-    component: () => import("../views/Error")
+    path: '*',
+    name: 'Error',
+    component: () => import('../views/Error')
   },
 ];
 
 const router = new VueRouter({
-  mode: "history",
+  mode: 'history',
   base: process.env.BASE_URL,
   routes
 });
