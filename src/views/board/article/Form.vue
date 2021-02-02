@@ -91,16 +91,13 @@ export default {
         const createdAt = new Date()
         const id = createdAt.getTime().toString()
         const md = this.$refs.editor.invoke('getMarkdown')
-        const sn = await this.$firebase.storage().ref().child('boards').child(this.document).child(this.fireUser.uid).child(id + '.md').putString(md)
+        const sn = await this.$firebase.storage().ref().child('boards').child(this.document).child(id + '.md').putString(md)
         const url = await sn.ref.getDownloadURL()
         const doc = {
           title: this.form.title,
           updatedAt: createdAt,
           url: url
         }
-        // 중간에 에러가 나서 컬렉션 개수와 실제 데이터 개수가 일치하지 않을 수 있음
-        // 맞춰주기 위해 batch를 생성하여 commit 전 에러 발생 시 롤백이 될 수 있도록 트랜젝션을 걸어줌
-        const batch = await this.$firebase.firestore().batch()
 
         if (!this.articleId) {
           doc.createdAt = createdAt
@@ -112,12 +109,10 @@ export default {
             photoURL: this.user.photoURL,
             displayName: this.user.displayName
           }
-          batch.set(this.ref.collection('articles').doc(id), doc)
-          batch.update(this.ref, {count: this.$firebase.firestore.FieldValue.increment(1)})
+          this.ref.collection('articles').doc(id).set(doc)
         } else {
-          batch.update(this.ref.collection('articles').doc(this.articleId), doc)
+          this.ref.collection('articles').doc(this.articleId).update(doc)
         }
-        await batch.commit();
       } finally {
         this.loading = false
         await this.$router.push('/board/' + this.document)

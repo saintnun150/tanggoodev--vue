@@ -14,7 +14,7 @@ exports.함수명 = functions.옵션값.onDelete();
 
 ### setting
 ```bash
-firebase functions:config:set admin.email=your email admin.db_url=your firebaseURL
+firebase functions:config:set admin.email=your email admin.db_url=your firebaseURL admin.region=asia-northeast3 admin.bucket_url=tanggoodev.appspot.com
 
 firebase deploy --only functions or functions:배포할 함수명
 

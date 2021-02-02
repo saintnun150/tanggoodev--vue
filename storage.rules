@@ -4,16 +4,14 @@ service firebase.storage {
 
         match /boards {
 
-            match /{boardId}/{userId}/{articleId} {
+            match /{boardId}/{articleId} {
                 allow read: if true;
                 allow write: if request.auth != null
-                && userId == request.auth.uid
+                && request.resource != null //지워지는 상황은 차단
                 && (
-                request.resource == null
-                || (request.resource.size < 5 //10 * 1024 * 1024
-                && request.resource.contentType.matches('application/octet-stream')
-                && (resource == null || request.resource.contentType == resource.contentType)
-                )
+                    request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('application/octet-stream')
+                    && (resource == null || request.resource.contentType == resource.contentType)
                 )
                 && articleId.size() == 16;
             }
