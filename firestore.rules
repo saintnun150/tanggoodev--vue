@@ -32,7 +32,7 @@ service cloud.firestore {
           before.user.displayName == after.user.displayName &&
           before.user.email == after.user.email &&
           before.user.photoURL == after.user.photoURL &&
-          (before.commentCount != after.commentCount || before.readCount != after.readCount);
+          (before.commentCount != after.commentCount || before.readCount != after.readCount || before.likeCount != after.likeCount || before.likeUids != after.likeUids);
         }
         allow read: if true;
         allow create: if approvedLevel(5);
@@ -40,9 +40,12 @@ service cloud.firestore {
         allow delete: if approvedLevel(0) || resource.data.uid == request.auth.uid;
 
         match /comments/{commentId} {
+          function incrementCommentCount(before, after) {
+            return before.likeCount != after.likeCount || before.likeUids != after.likeUids;
+          }
           allow read: if true;
           allow create: if approvedLevel(5);
-          allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid;
+          allow update, delete: if approvedLevel(0) || resource.data.uid == request.auth.uid || incrementCommentCount(resoure.data, request.resource.data);
         }
       }
     }
