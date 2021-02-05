@@ -34,7 +34,6 @@ export default {
   methods: {
     async test() {
       const sn = await this.$firebase.storage().ref().child('boards').child('tt').child('1234567890123456').putString('hi!')
-      console.log(sn)
     }
   }
 }

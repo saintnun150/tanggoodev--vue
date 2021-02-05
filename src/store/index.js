@@ -15,7 +15,6 @@ export default new Vuex.Store({
       state.drawerState = payload;
     },
     changeEditable(state, payload) {
-      console.log('payload', payload);
       state.editable = payload;
     },
     setFireUser(state, fu) {
